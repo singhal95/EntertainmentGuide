@@ -17,6 +17,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    buildTypes.each {
+        it.buildConfigField 'String', 'OPEN_MOVIE_GUIDE_API_KEY', "\"c686b5d39204b19a48fb9a27f5457a41\""
+    }
 }
 
 dependencies {
@@ -25,5 +29,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.android.support:support-v4:24.0.0'
+
     testCompile 'junit:junit:4.12'
 }
