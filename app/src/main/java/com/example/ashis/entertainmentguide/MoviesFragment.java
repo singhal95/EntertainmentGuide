@@ -1,25 +1,22 @@
 package com.example.ashis.entertainmentguide;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,9 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -41,9 +35,10 @@ import java.util.ArrayList;
  */
 
 public class MoviesFragment extends Fragment {
-   private ArrayList<String> images;
-    private String imageUrl = null;
+   private ArrayList<String> images, movieNameArray;
+    private ImageView image;
     private View rootView;
+    private TextView movieText;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -150,6 +145,10 @@ public class MoviesFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<String> imageUrl) {
 
+            ProgressBar progress = (ProgressBar)rootView.findViewById(R.id.progress);
+
+            progress.setVisibility(View.INVISIBLE);
+
             GridView gridView = (GridView) rootView.findViewById(R.id.gridView);
 
             gridView.setAdapter(new ImageAdapter(getActivity()));
@@ -159,6 +158,7 @@ public class MoviesFragment extends Fragment {
 
         private void getmoviesString(String moviesJsonString) {
         images = new ArrayList<String>();
+        movieNameArray = new ArrayList<String>();
             try {
                 JSONObject rootMovie = new JSONObject(moviesJsonString);
 
@@ -169,6 +169,8 @@ public class MoviesFragment extends Fragment {
                     JSONObject arrayObj = moviesArray.getJSONObject(i);
 
                     String posterImage = arrayObj.getString("backdrop_path");
+
+                    String movieName = arrayObj.getString("original_title");
 
                     String imageJsonData = getImageJson();
 
@@ -184,6 +186,7 @@ public class MoviesFragment extends Fragment {
 
                     images.add(imageBaseUrl+imageSize+posterImage);
 
+                    movieNameArray.add(movieName);
                 }
 
 
@@ -292,25 +295,34 @@ public class MoviesFragment extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            ImageView imageView;
+
+
+            RecordHolder holder = new RecordHolder();
+
+            View gridview = convertView;
             if (convertView == null){
 
-                imageView = new ImageView(mContext);
+              LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                gridview = new View(mContext);
+                gridview=inflater.inflate(R.layout.grid_view_layout,parent,false);
+                holder.imageView =(ImageView)gridview.findViewById(R.id.imageView);
+                holder.textView = (TextView) gridview.findViewById(R.id.textViewMovieName);
+                gridview.setTag(holder);
+            }
+            else {holder=(RecordHolder)gridview.getTag();
 
-                imageView.setLayoutParams(new GridView.LayoutParams(100,100));
-
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-                imageView.setPadding(8, 8, 8, 8);
 
             }
-            else {
-                imageView=(ImageView)convertView;
-            }
-            Glide.with(mContext).load(images.get(position)).into(imageView);
+            Glide.with(mContext).load(images.get(position)).into(holder.imageView);
 
-            return imageView;
+            holder.textView.setText(movieNameArray.get(position));
+
+            return gridview;
         }
+    }
+    static class RecordHolder{
+        ImageView imageView;
+        TextView textView;
     }
 
     }
