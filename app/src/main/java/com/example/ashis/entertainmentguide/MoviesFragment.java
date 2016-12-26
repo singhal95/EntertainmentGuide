@@ -1,13 +1,19 @@
 package com.example.ashis.entertainmentguide;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -35,10 +41,10 @@ import java.util.ArrayList;
  */
 
 public class MoviesFragment extends Fragment {
-   private ArrayList<String> images, movieNameArray;
-    private ImageView image;
-    private View rootView;
-    private TextView movieText;
+   private ArrayList<String> imagesArray = null, movieNameArray=null;
+   private View rootView;
+   String sortValue;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -47,11 +53,58 @@ public class MoviesFragment extends Fragment {
 
         FetchMovieData getMovieData = new FetchMovieData();
 
+
         getMovieData.execute();
-       // int item = images.size();
+       // int item = imagesArray.size();
         //Log.i("size",String.valueOf(item));
      //   gridView.setAdapter(new ImageAdapter(this));
         return rootView;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case R.id.sortBy: Intent i = new Intent(getActivity(),SettingsActivity.class);
+                startActivity(i);
+                break;
+            case R.id.refresh: updateMovies();
+                break;
+
+        }
+        return true;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main,menu);
+    }
+
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+       updateMovies();
+    }
+
+
+
+    private void updateMovies() {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sortValue = pref.getString(getString(R.string.pref_sort_key),getString(R.string.pref_pop_value));
+        Log.i("sortValue",sortValue);
+        FetchMovieData movieData = new FetchMovieData();
+        imagesArray =null;
+        movieNameArray=null;
+        movieData.execute(sortValue);
+
     }
 
     public class FetchMovieData extends AsyncTask<String,Void,ArrayList<String>>{
@@ -59,29 +112,33 @@ public class MoviesFragment extends Fragment {
         @Override
         protected ArrayList<String> doInBackground(String... params) {
 
-            HttpURLConnection urlConnection = null;
-
-            BufferedReader reader = null;
-
             String moviesJsonString = null;
 
             String BASE_URI = "https://api.themoviedb.org/3/discover/movie?";
 
             String LANGUAGE = "language";
 
-            String LANGUAGE_VALUE = "en-US";
+            String LANGUAGE_VALUE = "en";
 
             String SORT_BY = "sort_by";
 
-            String SORT_BY_VALUE = "popularity.desc";
-
             String URI_API_KEY = "api_key";
 
-            Uri.Builder uribuilder = Uri.parse(BASE_URI).buildUpon().appendQueryParameter(URI_API_KEY,BuildConfig.OPEN_MOVIE_GUIDE_API_KEY).appendQueryParameter(LANGUAGE,LANGUAGE_VALUE).appendQueryParameter(SORT_BY,SORT_BY_VALUE);
+
+            HttpURLConnection urlConnection = null;
+
+            BufferedReader reader = null;
+
+
 
             try {
 
+                Uri.Builder uribuilder = Uri.parse(BASE_URI).buildUpon().appendQueryParameter(URI_API_KEY,BuildConfig.OPEN_MOVIE_GUIDE_API_KEY).appendQueryParameter(LANGUAGE,LANGUAGE_VALUE).appendQueryParameter(SORT_BY,params[0]);
+
+
                 URL url = new URL(uribuilder.toString());
+
+                Log.i("url", String.valueOf(url));
 
                 urlConnection = (HttpURLConnection)url.openConnection();
 
@@ -139,7 +196,7 @@ public class MoviesFragment extends Fragment {
 
             }
 
-            return images;
+            return imagesArray;
         }
 
         @Override
@@ -147,49 +204,60 @@ public class MoviesFragment extends Fragment {
 
             ProgressBar progress = (ProgressBar)rootView.findViewById(R.id.progress);
 
-            progress.setVisibility(View.INVISIBLE);
 
             GridView gridView = (GridView) rootView.findViewById(R.id.gridView);
 
-            gridView.setAdapter(new ImageAdapter(getActivity()));
+            if (imagesArray !=null) {
 
+                progress.setVisibility(View.INVISIBLE);
+
+                gridView.setAdapter(new ImageAdapter(getActivity()));
+
+            }
 
         }
 
         private void getmoviesString(String moviesJsonString) {
-        images = new ArrayList<String>();
+        imagesArray = new ArrayList<String>();
         movieNameArray = new ArrayList<String>();
             try {
                 JSONObject rootMovie = new JSONObject(moviesJsonString);
 
                 JSONArray moviesArray = rootMovie.getJSONArray("results");
 
-                for (int i=0;i<moviesArray.length();i++) {
-
-                    JSONObject arrayObj = moviesArray.getJSONObject(i);
-
-                    String posterImage = arrayObj.getString("backdrop_path");
-
-                    String movieName = arrayObj.getString("original_title");
-
-                    String imageJsonData = getImageJson();
-
-                    JSONObject rootImage = new JSONObject(imageJsonData);
-
-                    JSONObject imageObj = rootImage.optJSONObject("images");
-
-                    String imageBaseUrl = imageObj.getString("secure_base_url");
-
-                    JSONArray sizeArray = imageObj.optJSONArray("logo_sizes");
-
-                    String imageSize = sizeArray.getString(5);
-
-                    images.add(imageBaseUrl+imageSize+posterImage);
-
-                    movieNameArray.add(movieName);
+                if (moviesArray.length() == 0){
+                    Log.i("arrayLemgth","0");
                 }
+                else {
 
+                    for (int i = 0; i < moviesArray.length(); i++) {
 
+                        JSONObject arrayObj = moviesArray.getJSONObject(i);
+
+                        String posterImage = arrayObj.getString("backdrop_path");
+
+                        String movieName = arrayObj.getString("original_title");
+
+                        Log.i("name",movieName);
+
+                        String imageJsonData = getImageJson();
+
+                        JSONObject rootImage = new JSONObject(imageJsonData);
+
+                        JSONObject imageObj = rootImage.optJSONObject("images");
+
+                        String imageBaseUrl = imageObj.getString("secure_base_url");
+
+                        JSONArray sizeArray = imageObj.optJSONArray("logo_sizes");
+
+                        String imageSize = sizeArray.getString(5);
+
+                        imagesArray.add(imageBaseUrl + imageSize + posterImage);
+
+                        movieNameArray.add(movieName);
+                    }
+
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -280,7 +348,7 @@ public class MoviesFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return images.size() ;
+            return imagesArray.size() ;
         }
 
         @Override
@@ -313,7 +381,7 @@ public class MoviesFragment extends Fragment {
 
 
             }
-            Glide.with(mContext).load(images.get(position)).into(holder.imageView);
+            Glide.with(mContext).load(imagesArray.get(position)).into(holder.imageView);
 
             holder.textView.setText(movieNameArray.get(position));
 

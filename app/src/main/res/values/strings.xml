@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Entertainment Guide</string>
+    <string name="pref_rel_date">Release Date</string>
+    <string name="pref_rev">Revenue</string>
+    <string name="pref_title">Title</string>
+    <string name="pref_sort_key">sortKey</string>
+
+    <string name="pref_rel_date_value">primary_release_date.asc</string>
+    <string name="pref_rev_value">revenue.desc</string>
+    <string name="pref_title_value">original_title.asc</string>
+    <string name="pref_pop_value">popularity.desc</string>
+    <string name="pref_pop">Popularity</string>
 </resources>
