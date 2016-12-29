@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -35,15 +36,19 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ashis on 12/22/2016.
  */
 
 public class MoviesFragment extends Fragment {
-   private ArrayList<String> imagesArray = null, movieNameArray=null;
+   private ArrayList<String> imagesArray = null;
+    private ArrayList<Integer> movieId;
    private View rootView;
    String sortValue;
+    String BASE_URL = "http://image.tmdb.org/t/p/w500";
+
 
     @Nullable
     @Override
@@ -55,9 +60,6 @@ public class MoviesFragment extends Fragment {
 
 
         getMovieData.execute();
-       // int item = imagesArray.size();
-        //Log.i("size",String.valueOf(item));
-     //   gridView.setAdapter(new ImageAdapter(this));
         return rootView;
     }
 
@@ -102,7 +104,6 @@ public class MoviesFragment extends Fragment {
         Log.i("sortValue",sortValue);
         FetchMovieData movieData = new FetchMovieData();
         imagesArray =null;
-        movieNameArray=null;
         movieData.execute(sortValue);
 
     }
@@ -205,7 +206,7 @@ public class MoviesFragment extends Fragment {
             ProgressBar progress = (ProgressBar)rootView.findViewById(R.id.progress);
 
 
-            GridView gridView = (GridView) rootView.findViewById(R.id.gridView);
+            GridView gridView = (GridView) rootView.findViewById(R.id.gridview);
 
             if (imagesArray !=null) {
 
@@ -213,13 +214,23 @@ public class MoviesFragment extends Fragment {
 
                 gridView.setAdapter(new ImageAdapter(getActivity()));
 
+                gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(getActivity(),DetailsActivity.class);
+                        intent.putExtra("idPosition", movieId.get(position));
+                        startActivity(intent);
+
+                    }
+                });
+
             }
 
         }
 
         private void getmoviesString(String moviesJsonString) {
         imagesArray = new ArrayList<String>();
-        movieNameArray = new ArrayList<String>();
+            movieId = new ArrayList<>();
             try {
                 JSONObject rootMovie = new JSONObject(moviesJsonString);
 
@@ -234,28 +245,29 @@ public class MoviesFragment extends Fragment {
 
                         JSONObject arrayObj = moviesArray.getJSONObject(i);
 
-                        String posterImage = arrayObj.getString("backdrop_path");
+                        String posterImage = arrayObj.getString("poster_path");
 
                         String movieName = arrayObj.getString("original_title");
 
-                        Log.i("name",movieName);
+                        String imageUrl = BASE_URL+posterImage;
 
-                        String imageJsonData = getImageJson();
+                        int idNum = arrayObj.getInt("id");
 
-                        JSONObject rootImage = new JSONObject(imageJsonData);
+                        movieId.add(idNum);
 
-                        JSONObject imageObj = rootImage.optJSONObject("images");
+                        if (posterImage.equals("null"))
+                        {
+                            imagesArray.add("http://logicinception.com/realestate/images/no-logo.png");
+                        }
+                        else {
+                            imagesArray.add(imageUrl);
+                        }
 
-                        String imageBaseUrl = imageObj.getString("secure_base_url");
-
-                        JSONArray sizeArray = imageObj.optJSONArray("logo_sizes");
-
-                        String imageSize = sizeArray.getString(5);
-
-                        imagesArray.add(imageBaseUrl + imageSize + posterImage);
-
-                        movieNameArray.add(movieName);
                     }
+
+                    Log.i("movieId",movieId.toString());
+                    Log.i("imageURl",imagesArray.toString());
+
 
                 }
             } catch (JSONException e) {
@@ -267,71 +279,6 @@ public class MoviesFragment extends Fragment {
 
         }
 
-        private String getImageJson() {
-            HttpURLConnection connection = null;
-            BufferedReader reader = null;
-            String imageJson = null ;
-            try {
-
-                URL url = new URL("https://api.themoviedb.org/3/configuration?api_key=c686b5d39204b19a48fb9a27f5457a41");
-
-                connection = (HttpURLConnection) url.openConnection();
-
-                connection.setRequestMethod("GET");
-
-                connection.connect();
-
-
-
-                InputStream streamWriter = connection.getInputStream();
-
-                StringBuffer buffer = new StringBuffer();
-
-                if (streamWriter == null)
-                    imageJson = null;
-
-                reader = new BufferedReader(new InputStreamReader(streamWriter));
-
-                String line;
-
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0)
-                    imageJson = null;
-
-                imageJson = buffer.toString();
-
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            finally {
-                if (connection != null) {
-
-                    connection.disconnect();
-
-                }
-
-                if (reader != null) {
-
-                    try {
-
-                        reader.close();
-
-                    } catch (final IOException e) {
-
-                        Log.i("PlaceholderFragment", "Error closing stream", e);
-
-                    }
-
-                }
-
-            }
-
-            return imageJson;
-        }
 
     }
 
@@ -374,23 +321,27 @@ public class MoviesFragment extends Fragment {
                 gridview = new View(mContext);
                 gridview=inflater.inflate(R.layout.grid_view_layout,parent,false);
                 holder.imageView =(ImageView)gridview.findViewById(R.id.imageView);
-                holder.textView = (TextView) gridview.findViewById(R.id.textViewMovieName);
+
                 gridview.setTag(holder);
             }
             else {holder=(RecordHolder)gridview.getTag();
 
 
             }
-            Glide.with(mContext).load(imagesArray.get(position)).into(holder.imageView);
+            if (!imagesArray.get(position).isEmpty()){
 
-            holder.textView.setText(movieNameArray.get(position));
+                Glide.with(mContext).load(imagesArray.get(position)).into(holder.imageView);
+
+            }
+
+
 
             return gridview;
         }
     }
     static class RecordHolder{
         ImageView imageView;
-        TextView textView;
+
     }
 
     }

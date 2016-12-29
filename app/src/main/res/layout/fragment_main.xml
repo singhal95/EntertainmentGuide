@@ -2,18 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#e0e0e0"
+    android:minHeight="82dp">
 
     <GridView
+        android:id="@+id/gridview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/gridView"
-        android:horizontalSpacing="10dp"
-        android:verticalSpacing="10dp"
-        android:gravity="center"
-        android:layout_margin="10dp"
+        android:layout_height="match_parent"
+        android:columnWidth="150dp"
         android:numColumns="auto_fit"
-        />
+        android:verticalSpacing="0dp"
+        android:horizontalSpacing="0dp"
+      />
 
     <ProgressBar
         android:layout_width="wrap_content"
