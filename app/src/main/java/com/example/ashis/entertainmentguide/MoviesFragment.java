@@ -59,6 +59,7 @@ public class MoviesFragment extends Fragment {
         FetchMovieData getMovieData = new FetchMovieData();
 
 
+
         getMovieData.execute();
         return rootView;
     }
@@ -89,11 +90,18 @@ public class MoviesFragment extends Fragment {
     }
 
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateMovies();
+    }
 
     @Override
     public void onStart() {
         super.onStart();
        updateMovies();
+        getActivity().setTitle(sortValue);
+
     }
 
 
@@ -125,6 +133,16 @@ public class MoviesFragment extends Fragment {
 
             String URI_API_KEY = "api_key";
 
+            String RATING = "vote_average.gte";
+
+            String RATING_VALUE = "3";
+
+            String RELEASE_DATE = "primary_release_date.gte";
+
+            String RELEASE_DATE_VALUE = "2000-01-01";
+
+            String MOVIE_LANGUAGE = "with_original_language";
+
 
             HttpURLConnection urlConnection = null;
 
@@ -134,7 +152,7 @@ public class MoviesFragment extends Fragment {
 
             try {
 
-                Uri.Builder uribuilder = Uri.parse(BASE_URI).buildUpon().appendQueryParameter(URI_API_KEY,BuildConfig.OPEN_MOVIE_GUIDE_API_KEY).appendQueryParameter(LANGUAGE,LANGUAGE_VALUE).appendQueryParameter(SORT_BY,params[0]);
+                Uri.Builder uribuilder = Uri.parse(BASE_URI).buildUpon().appendQueryParameter(URI_API_KEY,BuildConfig.OPEN_MOVIE_GUIDE_API_KEY).appendQueryParameter(LANGUAGE,LANGUAGE_VALUE).appendQueryParameter(SORT_BY,params[0]).appendQueryParameter(RATING,RATING_VALUE).appendQueryParameter(RELEASE_DATE,RELEASE_DATE_VALUE).appendQueryParameter(MOVIE_LANGUAGE,LANGUAGE_VALUE);
 
 
                 URL url = new URL(uribuilder.toString());

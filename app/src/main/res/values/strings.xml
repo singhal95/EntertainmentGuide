@@ -5,9 +5,11 @@
     <string name="pref_title">Title</string>
     <string name="pref_sort_key">sortKey</string>
 
-    <string name="pref_rel_date_value">primary_release_date.asc</string>
+    <string name="pref_rel_date_value">primary_release_date.desc</string>
     <string name="pref_rev_value">revenue.desc</string>
     <string name="pref_title_value">original_title.asc</string>
     <string name="pref_pop_value">popularity.desc</string>
     <string name="pref_pop">Popularity</string>
+    <string name="pref_rating">Rating</string>
+    <string name="pref_rating_value">vote_average.desc</string>
 </resources>

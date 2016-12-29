@@ -2,6 +2,7 @@
 <resources>
     <string-array name="SortEntries">
         <item>@string/pref_pop</item>
+        <item>@string/pref_rating</item>
         <item>@string/pref_rel_date</item>
         <item>@string/pref_rev</item>
         <item>@string/pref_title</item>
@@ -9,6 +10,7 @@
 
     <string-array name="SortValues">
         <item>@string/pref_pop_value</item>
+        <item>@string/pref_rating_value</item>
         <item>@string/pref_rel_date_value</item>
         <item>@string/pref_rev_value</item>
         <item>@string/pref_title_value</item>

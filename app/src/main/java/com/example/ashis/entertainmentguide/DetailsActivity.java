@@ -1,11 +1,16 @@
 package com.example.ashis.entertainmentguide;
 
 import android.content.Intent;
+import android.graphics.Movie;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,6 +23,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class DetailsActivity extends AppCompatActivity {
 private int id;
@@ -30,10 +36,17 @@ private int id;
 
     private String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/w500";
 
+    private String productionHouse,genre,movieTitle,imageURL,rating,releaseDate,movieOverview;
+
+    private ImageView detailsImage ;
+
+    private TextView textMovieTitle,textMovieRating,textMovieGenre,textMovieProduction,textMovieSynopsis,textMovieReleaseDate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+
+
         try {
 
 
@@ -46,6 +59,21 @@ private int id;
 
         FetchMovieDetails fetchMovieDetails = new FetchMovieDetails();
         fetchMovieDetails.execute(id);
+
+         detailsImage = (ImageView) findViewById(R.id.detailsImage);
+
+        textMovieTitle = (TextView) findViewById(R.id.textViewMovieTitle);
+
+        textMovieRating = (TextView) findViewById(R.id.textViewRating);
+
+        textMovieGenre = (TextView) findViewById(R.id.textViewGenre);
+
+        textMovieProduction = (TextView) findViewById(R.id.textViewProduction);
+
+        textMovieSynopsis = (TextView) findViewById(R.id.textViewSynopsis);
+
+        textMovieReleaseDate = (TextView) findViewById(R.id.textViewReleaseDate);
+
     }
 
     public  class FetchMovieDetails extends AsyncTask<Integer,Void,Void>{
@@ -55,6 +83,7 @@ private int id;
 
         @Override
         protected Void doInBackground(Integer... params) {
+
 
             try {
                 Uri.Builder uri = Uri.parse(BASE_URL_MOVIE_DETAILS).buildUpon().appendPath(String.valueOf(params[0])).appendQueryParameter(API_KEY,BuildConfig.OPEN_MOVIE_GUIDE_API_KEY);
@@ -75,6 +104,26 @@ private int id;
             }
 
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+            setTitle(movieTitle);
+
+            Glide.with(getApplicationContext()).load(imageURL).into(detailsImage);
+
+            textMovieTitle.setText(movieTitle);
+
+            textMovieRating.setText("("+rating+")");
+
+            textMovieGenre.setText(genre);
+
+            textMovieProduction.setText(productionHouse);
+
+            textMovieSynopsis.setText(movieOverview);
+
+            textMovieReleaseDate.setText(releaseDate);
         }
 
         private String getJsonData() throws IOException, JSONException {
@@ -107,22 +156,22 @@ private int id;
 
         private void getJsonElements(String detailsJson) throws JSONException {
 
-            String productionHouse = null,genre=null;
+
 
 
             JSONObject root = new JSONObject(detailsJson);
 
-            String movieTitle = root.getString("original_title");
+             movieTitle = root.getString("original_title");
 
-            String movieOverview = root.getString("overview");
+             movieOverview = root.getString("overview");
 
             String imagePoster = root.getString("poster_path");
 
-            String imageURL = IMAGE_BASE_URL+imagePoster;
+             imageURL = IMAGE_BASE_URL+imagePoster;
 
-            String releaseDate = root.getString("release_date");
+             releaseDate = root.getString("release_date");
 
-            String rating = root.getString("vote_average");
+             rating = root.getString("vote_average");
 
             JSONArray productionArray = root.getJSONArray("production_companies");
 
@@ -139,6 +188,8 @@ private int id;
             }
 
             Log.i("movieDetails",movieTitle+"\n"+genre+"\n"+productionHouse+"\n"+imageURL+"\n"+movieOverview+"\n"+releaseDate+"\n"+rating);
+
+
 
         }
 
