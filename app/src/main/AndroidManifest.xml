@@ -13,25 +13,36 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".SettingsFragment"
             android:label="Settings"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".DetailsActivity"
+        <activity
+            android:name=".DetailsActivity"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+        <provider
+            android:name=".data.MovieProvider"
+            android:authorities="com.example.ashis.entertainmentguide"
+            android:exported="false"
+            android:syncable="true" />
+
+        <activity android:name=".SettingsActivity"
+            android:parentActivityName=".MainActivity">
+
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity"/>
-
-
         </activity>
     </application>
 

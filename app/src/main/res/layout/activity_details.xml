@@ -14,23 +14,24 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:elevation="1dp"
+        android:contentDescription="@string/image_desc"
         android:keepScreenOn="false"
         android:scaleType="fitXY" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2">
+        android:layout_weight="2"
+        android:id="@+id/itemsScrollView">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:orientation="horizontal">
@@ -39,10 +40,8 @@
                     android:id="@+id/textViewMovieTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
                     android:layout_marginTop="10dp"
                     android:layout_weight="1"
-                    android:text="TextView"
                     android:textAlignment="viewEnd"
                     android:textAppearance="@android:style/TextAppearance.Material.Large"
                     android:textSize="24sp" />
@@ -51,10 +50,8 @@
                     android:id="@+id/textViewRating"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
                     android:layout_marginTop="10dp"
                     android:layout_weight="1"
-                    android:text="10.0"
                     android:textAppearance="@android:style/TextAppearance.Material.Widget.Toolbar.Subtitle"
                     android:textSize="20sp" />
             </LinearLayout>
@@ -65,9 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/linearLayout"
                 android:layout_centerHorizontal="true"
-                android:layout_marginLeft="5dp"
                 android:layout_marginTop="10dp"
-                android:text="TextGenre"
                 android:textSize="20sp" />
 
             <TextView
@@ -75,33 +70,34 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/textViewGenre"
-                android:layout_marginLeft="5dp"
                 android:layout_marginTop="20dp"
                 android:layout_centerHorizontal="true"
-                android:text="TextView"
                 android:textSize="20sp" />
 
 
-            <TextView
-                android:id="@+id/textViewProduction"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/textViewReleaseDate"
-                android:layout_centerHorizontal="true"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="10dp"
-                android:text="TextView"
-                android:textSize="20sp" />
+
 
             <TextView
                 android:id="@+id/textViewSynopsis"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/textViewProduction"
-                android:layout_marginLeft="5dp"
+                android:layout_below="@+id/textViewReleaseDate"
                 android:layout_marginTop="20dp"
-                android:text="TextView"
                 android:textSize="20sp" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textViewSynopsis"
+                android:text="@string/movie_trailer_btn"
+                android:id="@+id/button_trailer"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/movie_reviews"
+                android:layout_below="@+id/button_trailer"
+                android:id="@+id/moviesReviews"/>
 
         </RelativeLayout>
     </ScrollView>

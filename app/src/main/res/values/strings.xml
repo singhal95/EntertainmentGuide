@@ -1,10 +1,9 @@
 <resources>
     <string name="app_name">Entertainment Guide</string>
     <string name="pref_rel_date">Release Date</string>
-    <string name="pref_rev">Revenue</string>
+    <string name="pref_rev">Earnings</string>
     <string name="pref_title">Title</string>
     <string name="pref_sort_key">sortKey</string>
-
     <string name="pref_rel_date_value">primary_release_date.desc</string>
     <string name="pref_rev_value">revenue.desc</string>
     <string name="pref_title_value">original_title.asc</string>
@@ -12,4 +11,12 @@
     <string name="pref_pop">Popularity</string>
     <string name="pref_rating">Rating</string>
     <string name="pref_rating_value">vote_average.desc</string>
+    <string name="menu_fav">Favourite</string>
+    <string name="appbar_scrolling_view_behavior" translatable="false">android.support.design.widget.AppBarLayout$ScrollingViewBehavior</string>
+    <string name="intentData">sendMovieData</string>
+    <string name="settings">Settings</string>
+    <string name="refresh">Refresh</string>
+    <string name="image_desc">Movie Icon Image</string>
+    <string name="movie_trailer_btn">Trailer</string>
+    <string name="movie_reviews">Reviews</string>
 </resources>
